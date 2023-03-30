@@ -145,7 +145,7 @@
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     function createBarGraph(data) {
-      svg.selectAll(".bar, .trackName, .streamCount, .axis").remove();
+      svg.selectAll(".bar, .trackName, .streamCount, .axis, .axis-label").remove();
 
       const color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -167,21 +167,25 @@
 
       // Add the x axis
       svg.append("g")
+        .attr("class", "axis x-axis")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
 
       // Add the y axis
       svg.append("g")
+        .attr("class", "axis y-axis")
         .call(d3.axisLeft(yRanking));
 
       // Add x-axis label
       svg.append("text")
+        .attr("class", "axis-label x-axis-label")
         .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top + 20) + ")")
         .style("text-anchor", "middle")
         .text("Streams");
 
       // Add y-axis label
       svg.append("text")
+        .attr("class", "axis-label y-axis-label")
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left)
         .attr("x", 0 - (height / 2))
