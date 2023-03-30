@@ -9,69 +9,145 @@
     .bar {
       fill-opacity: 0.8;
     }
+
+    .loader {
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+    }
+
+    .loader .circle {
+      fill: none;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 251;
+      stroke-dashoffset: 62.75;
+      transform-origin: center;
+      animation: progress 1.5s infinite linear;
+    }
+
+    .loader .circle--inner {
+      stroke: #4cb2ff;
+    }
+
+    .loader .circle--outer {
+      stroke: #3a99d8;
+      animation-delay: -0.75s;
+    }
+
+    @keyframes progress {
+      0% {
+        transform: rotate(0);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 
 <body>
   <script type="text/javascript" src="lib/d3.v5.min.js"></script>
   <script type="text/javascript" src="lib/d3-dsv.min.js"></script>
-
+  <div>
+    <label for="region">Select Region:</label>
+    <select id="region" name="region">
+    </select>
+  </div>
+  <div class="loader" id="loader">
+    <svg height="100" width="100">
+      <circle class="circle circle--inner" cx="50" cy="50" r="40"></circle>
+      <circle class="circle circle--outer" cx="50" cy="50" r="40"></circle>
+    </svg>
+  </div>
   <script>
-    // Load large data set from server
+    function showLoader() {
+      document.getElementById("loader").style.display = "block";
+    }
 
-    fetch('http://localhost:5000/get-data')
+    function hideLoader() {
+      document.getElementById("loader").style.display = "none";
+    }
+
+    showLoader();
+    // Load unique regions from the server and populate the dropdown menu
+    fetch('http://localhost:5000/get-regions')
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         return response.json();
       })
-      .then(data => {
-        console.log(data); // Log the data to the console
-        createBarGraph(data);
+      .then(regions => {
+        const regionSelect = document.getElementById("region");
+        regions.forEach(region => {
+          const option = document.createElement("option");
+          option.value = region;
+          option.text = region;
+          regionSelect.add(option);
+        });
+        // Fetch data and create the bar graph for the initially selected region
+        fetchDataAndUpdateGraph(regionSelect.value);
       })
       .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
-      });
-    // // Load the data
-    // const csvFilePath = "data_s.csv";
-    // const columns = ["Position", "Track Name", "Artist", "Streams", "URL", "Date", "Region"];
-    // const parseDate = d3.timeParse("%Y-%m-%d");
-
-    // d3.csv(csvFilePath, function (d) {
-    //   return {
-    //     Position: +d.Position,
-    //     TrackName: d["Track Name"],
-    //     Artist: d.Artist,
-    //     Streams: +d.Streams,
-    //     URL: d.URL,
-    //     Date: parseDate(d.Date),
-    //     Region: d.Region
-    //   };
-    // }).then(function (data) {
-    //   console.log(data);
-    //   const filteredData = data.filter(d => d.Region === 'ec' && d.Date.getTime() === parseDate('2017-01-01').getTime())
-    //     .sort((a, b) => b.Streams - a.Streams)
-    //     .slice(0, 10);
-
-    //   createBarGraph(filteredData);
+      })
+    // .finally(() => {
+    //   hideLoader();
     // });
 
+
+    // Load large data set from server and update the bar graph when the region is changed
+    document.getElementById("region").addEventListener("change", function () {
+      const selectedRegion = this.value;
+      fetchDataAndUpdateGraph(selectedRegion);
+    });
+
+    function fetchDataAndUpdateGraph(region) {
+      showLoader();
+      fetch(`http://localhost:5000/get-data?region=${region}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data); // Log the data to the console
+          createBarGraph(data);
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+        })
+        .finally(() => {
+          hideLoader();
+        });
+    }
+
+    // Fetch data and create the bar graph for the initially selected region
+    fetchDataAndUpdateGraph(document.getElementById("region").value);
+
+    // Set up margins
+    const margin = { top: 50, right: 100, bottom: 100, left: 50 },
+      width = 1000 - margin.left - margin.right,
+      height = 800 - margin.top - margin.bottom;
+
+    // Create the SVG element
+    const svg = d3.select("body")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
     function createBarGraph(data) {
+      svg.selectAll(".bar, .trackName, .streamCount, .axis").remove();
 
       const color = d3.scaleOrdinal(d3.schemeCategory10);
-      // Set up margins
-      const margin = { top: 50, right: 100, bottom: 100, left: 50 },
-        width = 1000 - margin.left - margin.right,
-        height = 800 - margin.top - margin.bottom;
-
-      // Create the SVG element
-      const svg = d3.select("body")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Set up the x and y scales
       const x = d3.scaleLinear()
