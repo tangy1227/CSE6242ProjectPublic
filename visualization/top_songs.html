@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<!-- To view in browser: python3 -m http.server 8080 & -->
+<!-- Then visit http://0.0.0.0:8080/interactive.html in your browser -->
+
+<head>
+  <title>Top Songs Ranking</title>
+  <style>
+
+  </style>
+</head>
+
+<body>
+  <script type="text/javascript" src="lib/d3.v5.min.js"></script>
+  <script type="text/javascript" src="lib/d3-dsv.min.js"></script>
+
+  <script>
+    // define the dimensions and margins for the line chart
+    var margin = ({ top: 50, right: 100, bottom: 50, left: 100 })
+    var width = 1000;
+    var height = 500;
+
+    var svg = d3
+      .select("body")
+      .append("svg")
+      .attr("id", "line_chart")
+      .attr("width", width)
+      .attr("height", height);
+
+    const csvFilePath = "data.csv";
+    const columns = ["Position", "Track Name", "Artist", "Streams", "URL", "Date", "Region"];
+    const parseDate = d3.timeParse("%Y-%m-%d");
+
+    d3.csv(csvFilePath, function (d) {
+      return {
+        Position: +d.Position,
+        TrackName: d["Track Name"],
+        Artist: d.Artist,
+        Streams: +d.Streams,
+        URL: d.URL,
+        Date: parseDate(d.Date),
+        Region: d.Region
+      };
+    }).then(function (data) {
+      console.log(data);
+
+    });
+
+
+  </script>
+
+</body>
