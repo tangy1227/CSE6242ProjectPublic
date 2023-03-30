@@ -17,30 +17,45 @@
   <script type="text/javascript" src="lib/d3-dsv.min.js"></script>
 
   <script>
+    // Load large data set from server
 
-    // Load the data
-    const csvFilePath = "data_s.csv";
-    const columns = ["Position", "Track Name", "Artist", "Streams", "URL", "Date", "Region"];
-    const parseDate = d3.timeParse("%Y-%m-%d");
+    fetch('http://localhost:5000/get-data')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log(data); // Log the data to the console
+        createBarGraph(data);
+      })
+      .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
+    // // Load the data
+    // const csvFilePath = "data_s.csv";
+    // const columns = ["Position", "Track Name", "Artist", "Streams", "URL", "Date", "Region"];
+    // const parseDate = d3.timeParse("%Y-%m-%d");
 
-    d3.csv(csvFilePath, function (d) {
-      return {
-        Position: +d.Position,
-        TrackName: d["Track Name"],
-        Artist: d.Artist,
-        Streams: +d.Streams,
-        URL: d.URL,
-        Date: parseDate(d.Date),
-        Region: d.Region
-      };
-    }).then(function (data) {
-      console.log(data);
-      const filteredData = data.filter(d => d.Region === 'ec' && d.Date.getTime() === parseDate('2017-01-01').getTime())
-        .sort((a, b) => b.Streams - a.Streams)
-        .slice(0, 10);
+    // d3.csv(csvFilePath, function (d) {
+    //   return {
+    //     Position: +d.Position,
+    //     TrackName: d["Track Name"],
+    //     Artist: d.Artist,
+    //     Streams: +d.Streams,
+    //     URL: d.URL,
+    //     Date: parseDate(d.Date),
+    //     Region: d.Region
+    //   };
+    // }).then(function (data) {
+    //   console.log(data);
+    //   const filteredData = data.filter(d => d.Region === 'ec' && d.Date.getTime() === parseDate('2017-01-01').getTime())
+    //     .sort((a, b) => b.Streams - a.Streams)
+    //     .slice(0, 10);
 
-      createBarGraph(filteredData);
-    });
+    //   createBarGraph(filteredData);
+    // });
 
     function createBarGraph(data) {
 
@@ -124,7 +139,7 @@
         .attr("dy", ".35em")
         .attr("text-anchor", "end")
         .attr("fill", "black")
-        .text(d => d.TrackName)
+        .text(d => d["Track Name"])
         .attr("opacity", 0)
         .transition()
         .duration(1000)
