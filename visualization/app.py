@@ -51,7 +51,7 @@ def get_regions():
 @app.route('/get-lyrics', methods=['GET'])
 def get_lyrics():
     date_filter = '2017-01-01'
-    region_filter = request.args.get('region', 'global')
+    region_filter = request.args.get('region', 'ec')
     top_n = 10
     csv_file = 'visualization/data.csv' # Replace with the actual file path
 
