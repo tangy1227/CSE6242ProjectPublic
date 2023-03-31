@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, make_response, request
 import pandas as pd
+from load_lyrics import Musixmatch
 
 app = Flask(__name__)
 
@@ -20,7 +21,7 @@ def index():
 
 @app.route('/get-data', methods=['GET'])
 def get_data():
-    csv_file = 'data.csv'
+    csv_file = 'visualization/data.csv' # Replace with the actual file path
     date_filter = '2017-01-01'
     region_filter = request.args.get('region', 'ec')
     top_n = 10
@@ -37,7 +38,7 @@ def get_data():
 
 @app.route('/get-regions', methods=['GET'])
 def get_regions():
-    csv_file = 'data.csv'  # Replace with the actual file path
+    csv_file = 'visualization/data.csv'  # Replace with the actual file path
 
     # Read the data and find the unique regions
     df = pd.read_csv(csv_file)
@@ -47,6 +48,24 @@ def get_regions():
     response = make_response(jsonify(unique_regions.tolist()))
     return response
 
+@app.route('/get-lyrics', methods=['GET'])
+def get_lyrics():
+    date_filter = '2017-01-01'
+    region_filter = request.args.get('region', 'global')
+    top_n = 10
+    csv_file = 'visualization/data.csv' # Replace with the actual file path
+
+    df = pd.read_csv(csv_file, parse_dates=['Date'])
+    df_filtered = df[(df['Region'] == region_filter) & (df['Date'] == date_filter)]
+    df_filtered = df_filtered.nlargest(top_n, 'Streams')
+    track_name = df_filtered["Track Name"].to_numpy()
+    artist = df_filtered["Artist"].to_numpy()
+
+    musix = Musixmatch(track_name, artist)
+    word_list, word_count = musix.word_appearance()
+    result = {"words": word_list, "word_count_obj": word_count}
+    response = make_response(jsonify(result))
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)
