@@ -57,13 +57,13 @@ def get_lyrics():
 
     df = pd.read_csv(csv_file, parse_dates=['Date'])
     df_filtered = df[(df['Region'] == region_filter) & (df['Date'] == date_filter)]
-    df_filtered = df_filtered.nlargest(top_n, 'Streams')
+    df_filtered = df_filtered.nlargest(min(top_n, df_filtered.shape[0]), 'Streams')
     track_name = df_filtered["Track Name"].to_numpy()
     artist = df_filtered["Artist"].to_numpy()
 
     musix = Musixmatch(track_name, artist)
     word_list, word_count = musix.word_appearance()
-    result = {"words": word_list, "word_count_obj": word_count}
+    result = {"words": word_list, "word_count_obj": word_count, "size": df_filtered.shape}
     response = make_response(jsonify(result))
     return response
 

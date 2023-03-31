@@ -17,32 +17,12 @@ class Musixmatch:
     def getURL(self, parameter) -> str:
         return f"{self.url}{parameter}&apikey={self.apikey}"
     
-    def trackSearch(self, q_track, q_artist, page_size=1, page=1, format="_json"):
-        """
-        Input track name and artist name
-        Return track ID
-        """
-        data = self._request(
-            self.getURL(
-                "track.search?"
-                "q_track={}"
-                "&q_artist={}"
-                "&page_size={}"
-                "&page={}"
-                "&format={}".format(
-                    q_track, q_artist, page_size, page, format
-                )
-            )
-        )
-        track_id = data["message"]["body"]["track_list"][0]["track"]["track_id"]
-        return track_id
-    
     def getLyrics(self, q_track, q_artist):
-        trackID = self.trackSearch(q_track, q_artist)
         lyricsData = self._request(
             self.getURL(
-                "track.lyrics.get?"
-                "track_id={}".format(trackID)
+                "matcher.lyrics.get?"
+                "q_track={}"
+                "&q_artist={}".format(q_track, q_artist)
             )
         )
         if lyricsData["message"]["header"]["status_code"] != 404:
@@ -59,7 +39,7 @@ class Musixmatch:
             clean_words = ["No-Lyrics-Data"]
 
         return clean_words
-    
+
     def word_appearance(self):
         """
         Input list of track names and list of artist names
@@ -68,6 +48,8 @@ class Musixmatch:
         num_track = len(self.q_track_list)
         word_count = {}
         for i in range(num_track):
+            # print(self.q_track_list[i])
+            # print(self.q_artist_list[i])
             lyrics = self.getLyrics(self.q_track_list[i], self.q_artist_list[i])
             for word in lyrics:
                 if word not in word_count:
