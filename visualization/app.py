@@ -2,6 +2,7 @@ from flask import Flask, jsonify, make_response, request
 import pandas as pd
 from load_lyrics import Musixmatch
 
+
 app = Flask(__name__)
 
 
@@ -21,7 +22,7 @@ def index():
 
 @app.route('/get-data', methods=['GET'])
 def get_data():
-    csv_file = 'visualization/data.csv' # Replace with the actual file path
+    csv_file = 'visualization/data.csv'
     date_filter = '2017-01-01'
     region_filter = request.args.get('region', 'ec')
     top_n = 10
@@ -38,7 +39,7 @@ def get_data():
 
 @app.route('/get-regions', methods=['GET'])
 def get_regions():
-    csv_file = 'visualization/data.csv'  # Replace with the actual file path
+    csv_file = 'visualization/total_stream_count.csv'
 
     # Read the data and find the unique regions
     df = pd.read_csv(csv_file)
@@ -48,12 +49,13 @@ def get_regions():
     response = make_response(jsonify(unique_regions.tolist()))
     return response
 
+
 @app.route('/get-lyrics', methods=['GET'])
 def get_lyrics():
     date_filter = '2017-01-01'
     region_filter = request.args.get('region', 'ec')
     top_n = 10
-    csv_file = 'visualization/data.csv' # Replace with the actual file path
+    csv_file = 'visualization/data.csv'
 
     df = pd.read_csv(csv_file, parse_dates=['Date'])
     df_filtered = df[(df['Region'] == region_filter) & (df['Date'] == date_filter)]
