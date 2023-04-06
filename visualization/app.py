@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, make_response, request
 import pandas as pd
 from load_lyrics import Musixmatch
-
+import csv
 
 app = Flask(__name__)
 
@@ -22,19 +22,54 @@ def index():
 
 @app.route('/get-data', methods=['GET'])
 def get_data():
+    # csv_file = 'visualization/data.csv'
+    # date_filter = '2017-01-01'
+    # region_filter = request.args.get('region', 'ec')
+    # top_n = 10
+
+    # # Read and filter the data
+    # df = pd.read_csv(csv_file, parse_dates=['Date'])
+    # df_filtered = df[(df['Region'] == region_filter) & (df['Date'] == date_filter)]
+    # df_filtered = df_filtered.nlargest(top_n, 'Streams')
+
+    # # Convert to JSON and return the result
+    # result = df_filtered.to_dict(orient='records')
+    # response = make_response(jsonify(result))
+    # return response
+
     csv_file = 'visualization/data.csv'
     date_filter = '2017-01-01'
     region_filter = request.args.get('region', 'ec')
     top_n = 10
 
-    # Read and filter the data
-    df = pd.read_csv(csv_file, parse_dates=['Date'])
-    df_filtered = df[(df['Region'] == region_filter) & (df['Date'] == date_filter)]
-    df_filtered = df_filtered.nlargest(top_n, 'Streams')
+    filtered_rows = []
+
+    with open(csv_file, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        data_found = False
+
+        for row in reader:
+            current_date = row['Date']
+            current_region = row['Region']
+
+            if current_region == region_filter and current_date == date_filter:
+                data_found = True
+                filtered_rows.append(row)
+
+                if len(filtered_rows) >= top_n:
+                    break
+            elif data_found:
+                break
+
+    # Convert the 'Streams' column to integer type for sorting
+    for row in filtered_rows:
+        row['Streams'] = int(row['Streams'])
+
+    # Sort the filtered data and get the top N records
+    filtered_rows = sorted(filtered_rows, key=lambda x: x['Streams'], reverse=True)[:top_n]
 
     # Convert to JSON and return the result
-    result = df_filtered.to_dict(orient='records')
-    response = make_response(jsonify(result))
+    response = make_response(jsonify(filtered_rows))
     return response
 
 @app.route('/get-regions', methods=['GET'])
