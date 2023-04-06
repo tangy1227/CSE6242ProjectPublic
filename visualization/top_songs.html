@@ -76,7 +76,7 @@
 
     showLoader();
     // Load unique regions from the server and populate the dropdown menu
-    fetch('http://localhost:5000/get-regions')
+    fetch('http://localhost:5001/get-regions')
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -112,7 +112,7 @@
 
     function fetchDataAndUpdateGraph(region) {
       showLoader();
-      fetch(`http://localhost:5000/get-data?region=${region}`)
+      fetch(`http://localhost:5001/get-data?region=${region}`)
         .then(response => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -133,7 +133,7 @@
 
     function fetchLyricsData(region) {
       showLoader();
-      fetch(`http://localhost:5000/get-lyrics?region=${region}`)
+      fetch(`http://localhost:5001/get-lyrics?region=${region}`)
         .then(response => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
