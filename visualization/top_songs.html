@@ -74,6 +74,11 @@
       document.getElementById("loader").style.display = "none";
     }
 
+    function getRegionKeyFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('region');
+    }
+
     showLoader();
     // Load unique regions from the server and populate the dropdown menu
     fetch('http://localhost:5001/get-regions')
@@ -91,9 +96,24 @@
           option.text = region;
           regionSelect.add(option);
         });
-        // Fetch data and create the bar graph for the initially selected region
-        fetchDataAndUpdateGraph(regionSelect.value);
-        fetchLyricsData(regionSelect.value)
+        // // Fetch data and create the bar graph for the initially selected region
+        // fetchDataAndUpdateGraph(regionSelect.value);
+        // fetchLyricsData(regionSelect.value)
+        // Get the region key from the URL
+        const initialRegionKey = getRegionKeyFromUrl();
+
+        if (initialRegionKey) {
+          // Set the selected option in the dropdown menu
+          regionSelect.value = initialRegionKey;
+
+          // Fetch data and create the bar graph for the region from the URL
+          fetchDataAndUpdateGraph(initialRegionKey);
+          fetchLyricsData(initialRegionKey);
+        } else {
+          // Fetch data and create the bar graph for the initially selected region in the dropdown menu
+          fetchDataAndUpdateGraph(regionSelect.value);
+          fetchLyricsData(regionSelect.value);
+        }
       })
       .catch(error => {
         console.error('There was a problem with the fetch operation:', error);

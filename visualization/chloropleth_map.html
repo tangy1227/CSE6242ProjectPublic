@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
-    
+
     <script type="text/javascript" src="lib/d3.v5.min.js"></script>
     <script type="text/javascript" src="lib/d3-dsv.min.js"></script>
     <script type="text/javascript" src="lib/d3-legend.min.js"></script>
@@ -9,20 +9,19 @@
     <script type="text/javascript" src="lib/d3-simple-slider.js"></script>
 
     <style>
-        /* define CSS rules here*/ 
+        /* define CSS rules here*/
         #tooltip {
-            font-family:Times, serif;
-            font-size:small;
-            padding:5px;
-            border-radius:4px;
-            background-color:black;
-            color:white;
+            font-family: Times, serif;
+            font-size: small;
+            padding: 5px;
+            border-radius: 4px;
+            background-color: black;
+            color: white;
         }
 
-        body{
+        body {
             background-color: whitesmoke;
         }
-    
     </style>
 
     <title>Baba Yaga</title>
@@ -31,42 +30,42 @@
 
 <body>
     <!-- Add heading for the visualization -->
-    
+
     <!-- Create dropdown element here. Options should be added after reading in game file, they should not be created here.-->
-    
-    <div id = "Date"></div>
-    <button id = "Play_button"> Play </button>
+
+    <div id="Date"></div>
+    <button id="Play_button"> Play </button>
 
     <!-- append visualization svg to this div-->
-    
+
 
     <script>
-        
+
         // enter code to define margin and dimensions for svg
-        var margin = {top: 20, bottom: 30, left: 40, right: 70};
+        var margin = { top: 20, bottom: 30, left: 40, right: 70 };
         var width = 960;
         var height = 500;
         // enter code to create svg
-        
+
         var svg = d3.select("body").append("svg")
-                        .attr("id", "chloropleth")
-                        .attr("width", width + margin.left + margin.right)
-                        .attr("height", height + margin.top + margin.bottom)
-                        .attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
+            .attr("id", "chloropleth")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("transform", "translate(" + margin.left + "," + 2 * margin.top + ")");
         var svg_slider = d3.select("body").append("svg")
-                        .attr("width", width + margin.left + margin.right)
-                        .attr("height", height + margin.top + margin.bottom)
-                        .attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
-        
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("transform", "translate(" + margin.left + "," + 2 * margin.top + ")");
+
         svg_slider.append("g").attr("transform", "translate(50, 50)");
         var slider;
 
         svg.append("g").attr("id", "countries");
         svg.append("g").attr("id", "legend").attr("transform", "translate(" + (width - margin.right - 10) + "," + margin.top + ")");
-        
+
 
         // enter code to define tooltip
-        
+
         // enter code to define projection and path required for Choropleth
         // For grading, set the name of functions for projection and path as "projection" and "path"
         var projection = d3.geoNaturalEarth1();
@@ -322,82 +321,92 @@
         }
 
         Promise.all([
-        
 
 
-        d3.json("world_countries.json"),
-        //d3.dsv(",", "data.csv", function(data){return data;}).then(function(data, error){console.log(data);});
 
-        d3.dsv(",", "total_stream_count.csv", function(data){
-                return {Date: data.Date, Region: data.Region, total_streams: data.total_streams};
+            d3.json("world_countries.json"),
+            //d3.dsv(",", "data.csv", function(data){return data;}).then(function(data, error){console.log(data);});
+
+            d3.dsv(",", "total_stream_count.csv", function (data) {
+                return { Date: data.Date, Region: data.Region, total_streams: data.total_streams };
             })
-            
-        ]).then(function(data, error){
+
+        ]).then(function (data, error) {
             let stream_data = data[1].filter(o => o.Region != "global");
             let date_list = d3.nest().key(d => d.Date).entries(stream_data).map(d => d.key).sort((a, b) => new Date(a) - new Date(b));
-            
+
             let min_date = myTimeParser(date_list[0]);
             let max_date = myTimeParser(date_list[date_list.length - 1]);
 
             var slider = d3.sliderBottom()
-                            .min(min_date)
-                            .max(max_date)
-                            .width(950).height(70)
-                            .tickFormat(d3.timeFormat("%Y-%m-%d"))
-                            .on("onchange", function(value){
-                                let current_date = d3.timeFormat("%Y-%m-%d")(new Date(value));
-                                console.log(slider.value());
-                                d3.select("#Date").text("Current Date: " + current_date);
-                                svg.selectAll("path").style("fill", function(d){
-                                    if(!(current_date in d.properties.streams)) return "grey";
-                                    else {return colorScale(d.properties.streams[current_date]);}
-                                });
-                            })
-                            .on("drag", function(){
-                                in_play = false;
-                                clearInterval(timer);
-                                d3.select("#Play_button").text("Play");
-                            });
-            
-            
+                .min(min_date)
+                .max(max_date)
+                .width(950).height(70)
+                .tickFormat(d3.timeFormat("%Y-%m-%d"))
+                .on("onchange", function (value) {
+                    let current_date = d3.timeFormat("%Y-%m-%d")(new Date(value));
+                    console.log(slider.value());
+                    d3.select("#Date").text("Current Date: " + current_date);
+                    svg.selectAll("path").style("fill", function (d) {
+                        if (!(current_date in d.properties.streams)) return "grey";
+                        else { return colorScale(d.properties.streams[current_date]); }
+                    });
+                })
+                .on("drag", function () {
+                    in_play = false;
+                    clearInterval(timer);
+                    d3.select("#Play_button").text("Play");
+                });
+
+
 
             svg_slider.select("g").call(slider);
-            let colors = ['#f7fcf5','#e5f5e0','#c7e9c0','#a1d99b','#74c476','#41ab5d','#238b45','#005a32'];
+            let colors = ['#f7fcf5', '#e5f5e0', '#c7e9c0', '#a1d99b', '#74c476', '#41ab5d', '#238b45', '#005a32'];
             //console.log(gameData.map(o => o.rating));
             let colorScale = d3.scaleQuantile().domain(stream_data.map(o => o.total_streams)).range(colors);
 
             let world = data[0];
-            d3.select("#Date").text("Current Date: " +  date_list[0]);
+
+            const reversedRegionCodes = {};
+            for (const [region, code] of Object.entries(region_codes_dict)) {
+                reversedRegionCodes[code] = region;
+            }
+
+            d3.select("#Date").text("Current Date: " + date_list[0]);
             svg.select("#countries").selectAll("path")
-                .data(world.features, function(data){
+                .data(world.features, function (data) {
                     let streams = stream_data.filter(d => ((region_codes_dict[d.Region] == data.id)));
-                    
+
                     data.properties.streams = {};
-                    for(var i = 0; i < streams.length; i++){
+                    for (var i = 0; i < streams.length; i++) {
                         data.properties.streams[streams[i].Date] = streams[i].total_streams;
                     }
-                             //if no data for country, set flags
+                    //if no data for country, set flags
                     //data.properties.num_users = (game_ratings.length == 0)? -99:game_ratings[0].num_users;
                     //console.log(data);
                     return data;
                 })
                 .enter()
                 .append("path")
-                .style("fill", function(d){
-                    if(date_list[0] in d.properties.streams) {return colorScale(d.properties.streams[date_list[0]])}
+                .style("fill", function (d) {
+                    if (date_list[0] in d.properties.streams) { return colorScale(d.properties.streams[date_list[0]]) }
                     else return "grey";
                 })
+                .attr("data-region", function (d) {
+                    return reversedRegionCodes[d.id];
+                })
                 .attr("stroke", "black")
-                .attr("d", path);
-            
-                let legend = d3.legendColor()
-                            .labelFormat(d3.format(".0f"))
-                            .useClass(false)
-                            .title("Number of Streams")
-                            .scale(colorScale);
+                .attr("d", path)
+                .on("click", handleRegionClick);
 
-                d3.select("#legend").call(legend);
-                
+            let legend = d3.legendColor()
+                .labelFormat(d3.format(".0f"))
+                .useClass(false)
+                .title("Number of Streams")
+                .scale(colorScale);
+
+            d3.select("#legend").call(legend);
+
             /*for(var i = 1; i < date_list.length; i++){
                 d3.select("#Date").transition().delay(i*200).duration(200).text("Current Date: " + date_list[i]);
                 svg.selectAll("path").transition().delay((i)*200).duration(200).style("fill", function(d){
@@ -409,8 +418,8 @@
 
             var in_play = false;
             var timer;
-            d3.select("#Play_button").on("click", function(){
-                if(d3.select(this).text() == "Play"){
+            d3.select("#Play_button").on("click", function () {
+                if (d3.select(this).text() == "Play") {
                     d3.select(this).text("Pause")
                     in_play = true;
                     timer = setInterval(update, 200);
@@ -422,9 +431,9 @@
                 }
             })
 
-            function update(){
+            function update() {
                 //86400000 milliseconds in a day.
-                if(in_play){
+                if (in_play) {
                     let new_date = slider.value().valueOf() + 86400000
                     slider.value(new_date);
                 }
@@ -432,13 +441,24 @@
         }
         );
 
-        function myTimeParser(date){
+        function myTimeParser(date) {
             date_array = date.split('-');
             month = parseInt(date_array[1]) - 1;
             return new Date(date_array[0], month, date_array[2]);
         }
 
-        
+        function handleRegionClick(d) {
+            // Extract the region value from the data-region attribute
+            const regionKey = d3.select(this).attr("data-region");
+
+            // Replace "new_page.html" with the actual target page
+            const targetUrl = `top_songs.html?region=${regionKey}`;
+
+            // Navigate to the new page with the region value
+            window.location.href = targetUrl;
+        }
+
+
 
     </script>
 
