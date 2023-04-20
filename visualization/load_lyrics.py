@@ -2,7 +2,7 @@ import requests
 import json
 
 class Musixmatch:
-    def __init__(self, q_track_list, q_artist_list) -> None:
+    def __init__(self, q_track_list, q_artist_list):
         self.url = "http://api.musixmatch.com/ws/1.1/"
         # only have access to 30% of the lyrics with this non-commercial api
         # allow only 2000 Api Calls per day and 500 Lyrics display per day
@@ -16,6 +16,46 @@ class Musixmatch:
     
     def getURL(self, parameter) -> str:
         return f"{self.url}{parameter}&apikey={self.apikey}"
+    
+    def cleanWords(self, word_list):
+        stopwords_en = ["the", "and", "a", "an", "in", "of", "to", 
+                     "that", "is", "was", "with", "for", "it", 
+                     "on", "as", "be", "at", "by", "this", "which", 
+                     "or", "not", "but", "from", "are", "have", 
+                     "has", "had", "if", "when", "where", "who", 
+                     "what", "how", "why", "then", "there", "their", 
+                     "so", "such", "like", "just", "only", "out", 
+                     "up", "down", "off", "over", "under", "again", 
+                     "some", "most", "other", "every", "many", "few", 
+                     "somebody", "anybody", "nobody", "all", "both", 
+                     "each", "either", "neither", "none", "some", "much", 
+                     "several", "enough", "plenty", "fewer", "more", "less", 
+                     "too", "very", "a", "an", "the", "no", "any", "some", 
+                     "much", "many", "few", "little", "lot", "most", "several", 
+                     "enough", "plenty", "all", "both", "neither", "either", 
+                     "every", "no one", "nobody", "nothing", "something", 
+                     "anything", "everything", "everyone", "someone", "this", 
+                     "that", "these", "those", "it", "its", "they", "them", 
+                     "their", "our", "us", "we", "you", "your", "he", "him", 
+                     "his", "she", "her", "hers", "it", "its", "they", "them", 
+                     "their", "themself", "himself", "herself", "itself", 
+                     "ourselves", "yourselves", "themselves"]
+        stopwords_es = ["de", "la", "que", "el", "en", "y", "a", "los", "del", 
+                        "se", "las", "por", "un", "para", "con", "no", "una", 
+                        "su", "al", "lo", "como", "más", "pero", "sus", "le", 
+                        "ya", "o", "fue", "este", "ha", "sí", "porque", "esta", 
+                        "entre", "cuando", "muy", "sin", "sobre", "también", "me", 
+                        "hasta", "hay", "donde", "quien", "desde", "todo", "nos", "durante"]
+        stopwords = stopwords_en + stopwords_es
+
+        punctuations = '.,!?;:()[]{}<>"\''
+        filtered_words = []
+        for word in word_list:
+            word = word.lower()
+            new_word = ''.join([char for char in word if char not in punctuations])
+            if new_word not in stopwords:
+                filtered_words.append(new_word)
+        return filtered_words
     
     def getLyrics(self, q_track, q_artist):
         lyricsData = self._request(
@@ -33,8 +73,7 @@ class Musixmatch:
             if "..." in words:
                 index = words.index("...") 
                 words = words[:index]
-            # Remove '(', ')', ',' in the words
-            clean_words = [s.replace('(', '').replace(')', '').replace(',','') for s in words]
+            clean_words = self.cleanWords(words)
         else:
             clean_words = ["No-Lyrics-Data"]
 
@@ -66,8 +105,12 @@ class Musixmatch:
 
 if __name__ == "__main__":
     # list of track names and their corresponding artist names
-    track_list = ['Reggaetón Lento (Bailemos)', 'Chantaje', 'Otra Vez (feat. J Balvin)', "Vente Pa' Ca", 'Safari'] #["Wild Blue", "Peaches (feat. Daniel Caesar, Giveon)"]
-    artist_list = ['CNCO', 'Shakira', 'Zion & Lennox', 'Ricky Martin', 'J Balvin'] #["John Mayer", "Justin Bieber"]
+    # track_list = ["Wild Blue", "Peaches (feat. Daniel Caesar, Giveon)"]
+    # artist_list = ["John Mayer", "Justin Bieber"]
+
+    track_list = ['Reggaetón Lento (Bailemos)', 'Chantaje', 'Otra Vez (feat. J Balvin)', "Vente Pa' Ca", 'Safari']
+    artist_list = ['CNCO', 'Shakira', 'Zion & Lennox', 'Ricky Martin', 'J Balvin']
     musix = Musixmatch(track_list, artist_list)
     word_list, word_count = musix.word_appearance()
+    print(word_count)
     
