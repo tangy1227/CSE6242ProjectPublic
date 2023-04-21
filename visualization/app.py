@@ -72,7 +72,7 @@ def get_regions():
 def get_lyrics():
     date_filter = '2017-01-01'
     region_filter = request.args.get('region', 'ec')
-    top_n = 10
+    top_n = 20
     db_file = 'data.db'
 
     # Create a connection to the SQLite database

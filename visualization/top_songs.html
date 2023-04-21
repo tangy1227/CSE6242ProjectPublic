@@ -170,6 +170,7 @@
         .finally(() => {
           hideLoader();
         });
+        svg2.selectAll("*").remove();
     }
 
     // Set up margins
@@ -296,8 +297,10 @@
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     function createWordCloud(data) {
-      var appearanceScale = d3.scaleLinear().range([10, 70]);
-      var words_data = data["words"].map(function (d) { return { text: d, size: data["word_count_obj"][d] }; })
+      var appearanceScale = d3.scaleLog().range([13, 90]);
+      var words_data = data["words"]
+        .map(function (d) { return { text: d, size: data["word_count_obj"][d] }; })
+        .slice(0,200)
 
       appearanceScale.domain([
         d3.min(words_data, function (d) { return d.size; }),
@@ -307,22 +310,26 @@
       var layout = d3.layout.cloud()
         .size([width, height])
         .words(words_data)
-        .padding(5)
-        .rotate(function () { return ~~(Math.random() * 2) * 90; })
+        .padding(2)
+        // .rotate(function () { return ~~(Math.random() * 2) * 90; })
         .font("Impact")
         .fontSize(function (d) { return appearanceScale(d.size); }) // d.size
         .on("end", draw);
       layout.start();
 
       function draw(words) {
-        svg2.selectAll("*").remove();
+        // svg2.selectAll("*").remove();
         svg2.append("g")
           .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
           .selectAll("text")
           .data(words)
           .enter()
           .append("text")
+
+          .transition()
+          .duration(1000) 
           .style("font-size", function (d) { return d.size + "px"; })
+
           .attr("fill", (d, i) => color(i))
           .style("font-family", "Impact")
           .attr("text-anchor", "middle")
@@ -330,8 +337,8 @@
             return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
           })
           .text(function (d) { return d.text; });
+        }
       }
-    }
   </script>
 
 </body>
