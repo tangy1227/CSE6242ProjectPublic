@@ -422,23 +422,38 @@
             .duration(1000)
             .attr("width", d => x(d.Streams));
 
+          // Create a clipPath to limit the text width
+          const maxTextWidth = 500;
+
           // Add track names
           svg.selectAll(".trackName")
             .data(data)
             .enter()
-            .append("text")
+            .append("foreignObject")
             .attr("class", "trackName")
-            .attr("x", 5)
-            .attr("y", (d, i) => yRanking(i + 1) + yRanking.bandwidth() / 2)
-            .attr("dy", ".35em")
-            .attr("text-anchor", "end")
-            .attr("fill", "black")
-            .text(d => d["Track Name"])
+            .attr("y", (d, i) => yRanking(i + 1))
+            .attr("height", yRanking.bandwidth())
             .attr("opacity", 0)
             .transition()
             .duration(1000)
             .attr("opacity", 1)
-            .attr("x", d => x(d.Streams) - 5);
+            .attr("x", d => x(d.Streams) - Math.min(x(d.Streams), maxTextWidth) - 10)
+            .attr("width", d => Math.min(x(d.Streams), maxTextWidth))
+            .each(function (d) {
+              d3.select(this)
+                .append("xhtml:div")
+                .style("overflow", "hidden")
+                .style("text-overflow", "ellipsis")
+                .style("white-space", "nowrap")
+                .style("line-height", yRanking.bandwidth() + "px")
+                .style("text-align", "right") // Right-align the text
+                .text(d["Track Name"])
+                .append("title")
+                .text(d["Track Name"]);
+            });
+
+
+
 
           // Add stream counts
           svg.selectAll(".streamCount")
