@@ -1,8 +1,8 @@
 # CSE6242Project
 
 ## Instructions to run the D3-based tool:
-* Download `data.csv` from https://drive.google.com/file/d/15ThtXZSPA49Y-jtjRzYFawzeLRTBwvAs/view?usp=sharing
-* Place `data.csv` in the `CODE/visualization/` directory
+* Visit https://drive.google.com/file/d/15ThtXZSPA49Y-jtjRzYFawzeLRTBwvAs/view?usp=sharing
+* Download `data.csv` and place it in the `CODE/visualization/` directory
 * Open a terminal window, and navigate to the top-level project directory.
 * Create a conda environment with all required packages by running: 
 ```bash
