@@ -72,7 +72,8 @@
       height: 100px;
       overflow: hidden;
       /* Disables scrollbars on the header frame. To enable scrollbars, change "hidden" to "scroll" */
-      background: #BCCE98;
+      /* background: #BCCE98; */
+      background: #beeaaa;
       border-radius: 15px;
     }
 
@@ -84,7 +85,8 @@
       width: 230px;
       overflow: auto;
       /* Scrollbars will appear on this frame only when there's enough content to require scrolling. To disable scrollbars, change to "hidden", or use "scroll" to enable permanent scrollbars */
-      background: #DAE9BC;
+      /* background: #DAE9BC; */
+      background: #d9eed0;
       border-radius: 15px;
     }
 
@@ -100,7 +102,8 @@
       right: 0;
       bottom: 0;
       overflow: auto;
-      background: #f5f5f5;
+      /* background: #f5f5f5; */
+      background: #f8fff5;
       border-radius: 15px;
     }
 
@@ -207,6 +210,20 @@
           <circle class="circle circle--outer" cx="50" cy="50" r="40"></circle>
         </svg>
       </div>
+
+      <div style="position: relative;">
+        <div style="background-color: #d9eed0; display: inline-block; padding: 5px 20px; border-radius: 5px; text-align: center;">
+          <h2 style="margin: 0;">Bar Chart</h2>
+        </div>
+      </div>
+      <div id="barchart"></div>
+
+      <div style="position: relative;">
+        <div style="background-color: #d9eed0; display: inline-block; padding: 5px 20px; border-radius: 5px; text-align: center;">
+          <h2 style="margin: 0;">Word Cloud</h2>
+        </div>
+      </div>
+      <div id="wordcloud"></div>
 
       <script>
         function showLoader() {
@@ -342,7 +359,7 @@
             .finally(() => {
               hideLoader();
             });
-          svg2.selectAll("*").remove();
+          // svg2.selectAll("*").remove();
         }
 
         // Set up margins
@@ -354,7 +371,7 @@
         const color = d3.scaleOrdinal(d3.schemeCategory10);
 
         // Create the SVG element
-        const svg = d3.select("main")
+        const svg = d3.select("#barchart")
           .append("svg")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
@@ -421,7 +438,6 @@
             .transition()
             .duration(1000)
             .attr("width", d => x(d.Streams));
-
           // Create a clipPath to limit the text width
           const maxTextWidth = 500;
 
@@ -452,9 +468,7 @@
                 .text(d["Track Name"]);
             });
 
-
-
-
+            
           // Add stream counts
           svg.selectAll(".streamCount")
             .data(data)
@@ -476,7 +490,7 @@
         }
 
         // Create the SVG2 element for Word Cloud
-        const svg2 = d3.select("main")
+        const svg2 = d3.select("#wordcloud")
           .append("svg")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
@@ -484,8 +498,10 @@
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         function createWordCloud(data) {
-          var appearanceScale = d3.scaleLinear().range([10, 70]);
-          var words_data = data["words"].map(function (d) { return { text: d, size: data["word_count_obj"][d] }; })
+          var appearanceScale = d3.scaleLog().range([13, 90]);
+          var words_data = data["words"]
+            .map(function (d) { return { text: d, size: data["word_count_obj"][d] }; })
+            .slice(0,200)
 
           appearanceScale.domain([
             d3.min(words_data, function (d) { return d.size; }),
@@ -495,8 +511,8 @@
           var layout = d3.layout.cloud()
             .size([width, height])
             .words(words_data)
-            .padding(5)
-            .rotate(function () { return ~~(Math.random() * 2) * 90; })
+            .padding(2)
+            // .rotate(function () { return ~~(Math.random() * 2) * 90; })
             .font("Impact")
             .fontSize(function (d) { return appearanceScale(d.size); }) // d.size
             .on("end", draw);
@@ -510,7 +526,11 @@
               .data(words)
               .enter()
               .append("text")
+
+              .transition()
+              .duration(1000) 
               .style("font-size", function (d) { return d.size + "px"; })
+
               .attr("fill", (d, i) => color(i))
               .style("font-family", "Impact")
               .attr("text-anchor", "middle")
@@ -521,6 +541,7 @@
           }
         }
       </script>
+
     </div>
   </main>
 
