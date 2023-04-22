@@ -5,7 +5,7 @@ import csv
 import sqlite3
 
 app = Flask(__name__)
-
+region_map = {'ar': 'Argentina', 'at':'Austria', 'au':'Australia', 'be':'Belgium', 'bo':'Bolivia', 'br':'Brazil', 'ca':'Canada', 'ch':'Switzerland', 'cl':'Chile', 'co':'Colombia', 'cr':'Costa Rica', 'cz':'Czechia', 'de':'Germany', 'dk':'Denmark', 'do':'Dominican Republic', 'ec':'Ecuador', 'ee':'Estonia', 'es':'Spain', 'fi':'Finland', 'fr':'France', 'gb':'UK', 'global':'Global', 'gr':'Greece', 'gt':'Guatemala', 'hk':'Hong Kong', 'hn':'Honduras', 'hu':'Hungary', 'id':'Indonesia', 'ie':'Ireland', 'is':'Iceland', 'it':'Italy', 'jp':'Japan', 'lt':'Lithuania', 'lu':'Luxembourg', 'lv':'Latvia', 'mx':'Mexico', 'my':'Malaysia', 'nl':'Netherlands', 'no':'Norway', 'nz':'New Zealand', 'pa':'Panama', 'pe':'Peru', 'ph':'Philippines', 'pl':'Poland', 'pt':'Portugal', 'py':'Paraguay', 'se':'Sweden', 'sg':'Singapore', 'sk':'Slovakia', 'sv':'El Salvador', 'tr':'Turkey', 'tw':'Taiwan', 'us':'US', 'uy':'Uruguay'}
 
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
@@ -25,7 +25,11 @@ def index():
 def get_data():
     db_file = 'data.db' # Replace with the actual file path
     date_filter = request.args.get('date', '2017-01-01')
-    region_filter = request.args.get('region', 'ec')
+    region = request.args.get('region', 'ec')
+    if region in region_map:
+        region_filter = region
+    else:
+        region_filter = [k for k, v in region_map.items() if v == region][0]
     top_n = 10
 
     # Create a connection to the SQLite database
@@ -62,9 +66,9 @@ def get_regions():
 
     # Close the connection to the SQLite database
     conn.close()
-
+    data = [region_map[r] for r in df['Region'].tolist()]
     # Convert to JSON and return the result
-    response = make_response(jsonify(df['Region'].tolist()))
+    response = make_response(jsonify(data))
     return response
 
 @app.route('/get-dates', methods=['GET'])
@@ -87,7 +91,11 @@ def get_dates():
 @app.route('/get-lyrics', methods=['GET'])
 def get_lyrics():
     date_filter = request.args.get('date', '2017-01-01')
-    region_filter = request.args.get('region', 'ec')
+    region = request.args.get('region', 'ec')
+    if region in region_map:
+        region_filter = region
+    else:
+        region_filter = [k for k, v in region_map.items() if v == region][0]
     top_n = 20
     db_file = 'data.db'
 
