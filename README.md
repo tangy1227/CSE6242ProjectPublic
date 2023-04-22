@@ -17,7 +17,7 @@ cd CODE/visualization/
 python create_database.py
 python app.py
 ```
-* * Open a second terminal window, navigate to the top-level project directory, and run
+* Open a second terminal window, navigate to the top-level project directory, and run
 ```bash
 cd CODE/visualization/
 python -m http.server 8000
