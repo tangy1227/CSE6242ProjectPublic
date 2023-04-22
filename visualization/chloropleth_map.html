@@ -487,7 +487,11 @@
                         })
                         .attr("stroke", "black")
                         .attr("d", path)
-                        .on("click", handleRegionClick)
+                        .on("click", function (d) {
+                            if (date_list[0] in d.properties.streams) {
+                                handleRegionClick(d);
+                            }
+                        })
                         .on("mouseover", function (d) {
                             d3.select(this)
                                 .transition()
