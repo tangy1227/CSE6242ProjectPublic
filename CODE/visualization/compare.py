@@ -5,13 +5,20 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 # This function takes a month as a string in the format 'YYYY-MM' and returns a list of the top 10 most similar regions and the bottom 10 least similar regions
 conn = sqlite3.connect('data.db')
-month = '2017-01'
+# month = '2017-01'
 
 # Load the data for the specified month
-df = pd.read_sql_query(f"SELECT * from data WHERE Date LIKE '{month}%' ", conn)
+# df = pd.read_sql_query(f"SELECT * from data WHERE Date LIKE '{month}%' ", conn)
+df = pd.read_sql_query(f"SELECT * from data", conn)
+
+# Load the country codes mapping file
+country_codes = pd.read_csv('country_codes.csv', index_col='Code')
+
+# Convert region codes to country names using the mapping file
+df['Country'] = df['Region'].str.upper().map(country_codes['Name'])
 
 # Pivot the data to create a matrix of region by track name, with the values being the number of streams
-pivot_table = pd.pivot_table(df, values='Streams', index=['Region'], columns=['Track Name'], aggfunc=np.sum, fill_value=0)
+pivot_table = pd.pivot_table(df, values='Streams', index=['Country'], columns=['Track Name'], aggfunc=np.sum, fill_value=0)
 
 normalized_matrix = pivot_table.apply(lambda x: x/x.sum(), axis=1)
 cosine_similarity_matrix = cosine_similarity(normalized_matrix)
