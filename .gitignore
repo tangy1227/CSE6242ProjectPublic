@@ -1,4 +1,4 @@
-visualization/data.csv
+CODE/visualization/*.csv
 .DS_Store
-visualization/data.db
-data.db
+CODE/visualization/*.db
+*.pyc
