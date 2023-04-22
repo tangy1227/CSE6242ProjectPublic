@@ -375,6 +375,7 @@
             })
             .catch(error => {
               console.error('There was a problem with the fetch operation:', error);
+              alert('The word cloud is not being displayed because there are no lyrics available or the API usage limit has been reached.');
             })
             .finally(() => {
               hideLoader();
