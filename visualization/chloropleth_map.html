@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+
 <head>
     <script type="text/javascript" src="lib/d3.v5.min.js"></script>
     <script type="text/javascript" src="lib/d3-dsv.min.js"></script>
@@ -18,91 +19,103 @@
             color: white;
         }
 
-		body {
-			margin: 0;
-			padding: 0;
-			overflow: hidden;
-			height: 100%; 
-			max-height: 100%; 
-			font-family:Sans-serif;
-			line-height: 1.5em;
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            max-height: 100%;
+            font-family: Sans-serif;
+            line-height: 1.5em;
             background-color: whitesmoke;
             border-radius: 10px;
-		}
-		
-		#header {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100px; 
-			overflow: hidden; /* Disables scrollbars on the header frame. To enable scrollbars, change "hidden" to "scroll" */
-			background: #BCCE98;
-            border-radius: 15px;
-		}
-		
-		#nav {
-			position: absolute; 
-			top: 100px; 
-			left: 0; 
-			bottom: 0;
-			width: 230px;
-			overflow: auto; /* Scrollbars will appear on this frame only when there's enough content to require scrolling. To disable scrollbars, change to "hidden", or use "scroll" to enable permanent scrollbars */
-			background: #DAE9BC;
-            border-radius: 15px;
-		}
-		
-		#logo {
-			padding:10px;
-		}
-		
-		main {
-			position: fixed;
-			top: 100px; /* Set this to the height of the header */
-			left: 230px; 
-			right: 0;
-			bottom: 0;
-			overflow: auto; 
-			background: #eeeeee;
-            border-radius: 15px;
-		}
-		
-		.innertube {
-			margin: 15px; /* Provides padding for the content */
-		}
-		
-		p {
-			color: #555;
-		}
-
-		nav ul {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-		}
-		
-		nav ul a {
-			color: darkgreen;
-			text-decoration: none;
-		}
-				
-		/*IE6 fix*/
-		* html body{
-			padding: 100px 0 0 230px; /* Set the first value to the height of the header and last value to the width of the nav */
-		}
-		
-		* html main{ 
-			height: 100%; 
-			width: 100%; 
-		}
-        p {
-            margin-top: 0; /* remove default top margin */
-            margin-bottom: 10px; /* add some bottom margin */
-            padding-left: 20px; /* add some left padding */
-            text-indent: -20px; /* move the first line back by the same amount as the padding */
         }
+
+        #header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            overflow: hidden;
+            /* Disables scrollbars on the header frame. To enable scrollbars, change "hidden" to "scroll" */
+            background: #BCCE98;
+            border-radius: 15px;
+        }
+
+        #nav {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            bottom: 0;
+            width: 230px;
+            overflow: auto;
+            /* Scrollbars will appear on this frame only when there's enough content to require scrolling. To disable scrollbars, change to "hidden", or use "scroll" to enable permanent scrollbars */
+            background: #DAE9BC;
+            border-radius: 15px;
+        }
+
+        #logo {
+            padding: 10px;
+        }
+
+        main {
+            position: fixed;
+            top: 100px;
+            /* Set this to the height of the header */
+            left: 230px;
+            right: 0;
+            bottom: 0;
+            overflow: auto;
+            background: #eeeeee;
+            border-radius: 15px;
+        }
+
+        .innertube {
+            margin: 15px;
+            /* Provides padding for the content */
+        }
+
+        p {
+            color: #555;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul a {
+            color: darkgreen;
+            text-decoration: none;
+        }
+
+        /*IE6 fix*/
+        * html body {
+            padding: 100px 0 0 230px;
+            /* Set the first value to the height of the header and last value to the width of the nav */
+        }
+
+        * html main {
+            height: 100%;
+            width: 100%;
+        }
+
+        p {
+            margin-top: 0;
+            /* remove default top margin */
+            margin-bottom: 10px;
+            /* add some bottom margin */
+            padding-left: 20px;
+            /* add some left padding */
+            text-indent: -20px;
+            /* move the first line back by the same amount as the padding */
+        }
+
         p::before {
-            content: "• "; /* add the bullet point character */
+            content: "• ";
+            /* add the bullet point character */
             margin-right: 8px;
         }
     </style>
@@ -121,14 +134,14 @@
     <main>
         <div class="innertube">
             <div id="Date"></div>
-            
+
             <script>
                 // enter code to define margin and dimensions for svg
                 var margin = { top: 20, bottom: 30, left: 40, right: 70 };
                 var width = 960;
                 var height = 500;
                 // enter code to create svg
-        
+
                 var svg = d3.select("main").append("svg")
                     .attr("id", "chloropleth")
                     .attr("width", width + margin.left + margin.right)
@@ -138,21 +151,21 @@
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
                     .attr("transform", "translate(" + margin.left + "," + 2 * margin.top + ")");
-        
+
                 svg_slider.append("g").attr("transform", "translate(50, 50)");
                 var slider;
-        
+
                 svg.append("g").attr("id", "countries");
                 svg.append("g").attr("id", "legend").attr("transform", "translate(" + (width - margin.right - 10) + "," + margin.top + ")");
-        
-        
+
+
                 // enter code to define tooltip
-        
+
                 // enter code to define projection and path required for Choropleth
                 // For grading, set the name of functions for projection and path as "projection" and "path"
                 var projection = d3.geoNaturalEarth1();
                 var path = d3.geoPath(projection);
-        
+
                 var region_codes_dict = {
                     'af': 'AFG',
                     'ax': 'ALA',
@@ -400,23 +413,23 @@
                     'zm': 'ZMB',
                     'zw': 'ZWE'
                 }
-        
+
                 Promise.all([
-        
+
                     d3.json("world_countries.json"),
                     //d3.dsv(",", "data.csv", function(data){return data;}).then(function(data, error){console.log(data);});
-        
+
                     d3.dsv(",", "total_stream_count.csv", function (data) {
                         return { Date: data.Date, Region: data.Region, total_streams: data.total_streams };
                     })
-        
+
                 ]).then(function (data, error) {
                     let stream_data = data[1].filter(o => o.Region != "global");
                     let date_list = d3.nest().key(d => d.Date).entries(stream_data).map(d => d.key).sort((a, b) => new Date(a) - new Date(b));
-        
+
                     let min_date = myTimeParser(date_list[0]);
                     let max_date = myTimeParser(date_list[date_list.length - 1]);
-        
+
                     var slider = d3.sliderBottom()
                         .min(min_date)
                         .max(max_date)
@@ -436,24 +449,24 @@
                             clearInterval(timer);
                             d3.select("#Play_button").text("Play");
                         });
-        
+
                     svg_slider.select("g").call(slider);
                     let colors = ['#f7fcf5', '#e5f5e0', '#c7e9c0', '#a1d99b', '#74c476', '#41ab5d', '#238b45', '#005a32'];
                     //console.log(gameData.map(o => o.rating));
                     let colorScale = d3.scaleQuantile().domain(stream_data.map(o => o.total_streams)).range(colors);
-        
+
                     let world = data[0];
-        
+
                     const reversedRegionCodes = {};
                     for (const [region, code] of Object.entries(region_codes_dict)) {
                         reversedRegionCodes[code] = region;
                     }
-        
+
                     d3.select("#Date").text("Current Date: " + date_list[0]);
                     svg.select("#countries").selectAll("path")
                         .data(world.features, function (data) {
                             let streams = stream_data.filter(d => ((region_codes_dict[d.Region] == data.id)));
-        
+
                             data.properties.streams = {};
                             for (var i = 0; i < streams.length; i++) {
                                 data.properties.streams[streams[i].Date] = streams[i].total_streams;
@@ -475,15 +488,15 @@
                         .attr("stroke", "black")
                         .attr("d", path)
                         .on("click", handleRegionClick);
-        
+
                     let legend = d3.legendColor()
                         .labelFormat(d3.format(".0f"))
                         .useClass(false)
                         .title("Number of Streams")
                         .scale(colorScale);
-        
+
                     d3.select("#legend").call(legend);
-        
+
                     /*for(var i = 1; i < date_list.length; i++){
                         d3.select("#Date").transition().delay(i*200).duration(200).text("Current Date: " + date_list[i]);
                         svg.selectAll("path").transition().delay((i)*200).duration(200).style("fill", function(d){
@@ -492,7 +505,7 @@
                             else {return colorScale(d.properties.streams[date_list[i]])}
                         });
                     }*/
-        
+
                     var in_play = false;
                     var timer;
                     d3.select("#Play_button").on("click", function () {
@@ -507,7 +520,7 @@
                             in_play = false;
                         }
                     })
-        
+
                     function update() {
                         //86400000 milliseconds in a day.
                         if (in_play) {
@@ -517,26 +530,30 @@
                     }
                 }
                 );
-        
+
                 function myTimeParser(date) {
                     date_array = date.split('-');
                     month = parseInt(date_array[1]) - 1;
                     return new Date(date_array[0], month, date_array[2]);
                 }
-        
+
                 function handleRegionClick(d) {
                     // Extract the region value from the data-region attribute
                     const regionKey = d3.select(this).attr("data-region");
-        
+                    const dateKey = d3.select("#Date").text().split(" ")[2];
+                    console.log(dateKey);
+
                     // Replace "new_page.html" with the actual target page
-                    const targetUrl = `top_songs.html?region=${regionKey}`;
-        
+                    const targetUrl = `top_songs.html?region=${regionKey}&date=${dateKey}`;
+
                     // Navigate to the new page with the region value
                     window.location.href = targetUrl;
                 }
+
             </script>
 
-            <button id="Play_button" style="background-color: #333; color: #fff; padding: 10px 20px; border-radius: 5px;"> Play </button>
+            <button id="Play_button"
+                style="background-color: #333; color: #fff; padding: 10px 20px; border-radius: 5px;"> Play </button>
         </div>
     </main>
 
@@ -544,14 +561,17 @@
         <div class="innertube">
             <h1>Interaction Steps</h1>
             <p>The play button can display stream counts from each country available in the dataset.</p>
-            <p>Clicking on the colored countries will take you to a new page that displays the top 10 songs played and the top words written in the lyrics from that day in that region.</p>
+            <p>Clicking on the colored countries will take you to a new page that displays the top 10 songs played and
+                the top words written in the lyrics from that day in that region.</p>
             <ul>
                 <li><a href="https://github.com/jerryuhoo/CSE6242Project">Project Github</a></li>
-                <li><a href="https://www.dropbox.com/s/vlwa2ryb1tcermk/CSE6242Project_Sastry.twbx?dl=0">Tableau Visualization</a></li>
+                <li><a href="https://www.dropbox.com/s/vlwa2ryb1tcermk/CSE6242Project_Sastry.twbx?dl=0">Tableau
+                        Visualization</a></li>
             </ul>
         </div>
-        
+
     </nav>
+
 
 </body>
 

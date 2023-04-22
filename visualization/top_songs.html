@@ -53,99 +53,111 @@
     }
 
     body {
-			margin: 0;
-			padding: 0;
-			overflow: hidden;
-			height: 100%; 
-			max-height: 100%; 
-			font-family:Sans-serif;
-			line-height: 1.5em;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      max-height: 100%;
+      font-family: Sans-serif;
+      line-height: 1.5em;
       /* background-color: whitesmoke; */
       border-radius: 10px;
-		}
-		
-		#header {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100px; 
-			overflow: hidden; /* Disables scrollbars on the header frame. To enable scrollbars, change "hidden" to "scroll" */
-			background: #BCCE98;
-      border-radius: 15px;
-		}
-		
-		#nav {
-			position: absolute; 
-			top: 100px; 
-			left: 0; 
-			bottom: 0;
-			width: 230px;
-			overflow: auto; /* Scrollbars will appear on this frame only when there's enough content to require scrolling. To disable scrollbars, change to "hidden", or use "scroll" to enable permanent scrollbars */
-			background: #DAE9BC;
-      border-radius: 15px;
-		}
-		
-		#logo {
-			padding:10px;
-		}
-		
-		main {
-			position: fixed;
-			top: 100px; /* Set this to the height of the header */
-			left: 230px; 
-			right: 0;
-			bottom: 0;
-			overflow: auto; 
-			background: #f5f5f5;
-      border-radius: 15px;
-		}
-		
-		.innertube {
-			margin: 15px; /* Provides padding for the content */
-		}
-		
-		p {
-			color: #555;
-		}
+    }
 
-		nav ul {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-		}
-		
-		nav ul a {
-			color: darkgreen;
-			text-decoration: none;
-		}
-				
-		/*IE6 fix*/
-		* html body{
-			padding: 100px 0 0 230px; /* Set the first value to the height of the header and last value to the width of the nav */
-		}
-		
-		* html main{ 
-			height: 100%; 
-			width: 100%; 
-		}
+    #header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      overflow: hidden;
+      /* Disables scrollbars on the header frame. To enable scrollbars, change "hidden" to "scroll" */
+      background: #BCCE98;
+      border-radius: 15px;
+    }
+
+    #nav {
+      position: absolute;
+      top: 100px;
+      left: 0;
+      bottom: 0;
+      width: 230px;
+      overflow: auto;
+      /* Scrollbars will appear on this frame only when there's enough content to require scrolling. To disable scrollbars, change to "hidden", or use "scroll" to enable permanent scrollbars */
+      background: #DAE9BC;
+      border-radius: 15px;
+    }
+
+    #logo {
+      padding: 10px;
+    }
+
+    main {
+      position: fixed;
+      top: 100px;
+      /* Set this to the height of the header */
+      left: 230px;
+      right: 0;
+      bottom: 0;
+      overflow: auto;
+      background: #f5f5f5;
+      border-radius: 15px;
+    }
+
+    .innertube {
+      margin: 15px;
+      /* Provides padding for the content */
+    }
+
+    p {
+      color: #555;
+    }
+
+    nav ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav ul a {
+      color: darkgreen;
+      text-decoration: none;
+    }
+
+    /*IE6 fix*/
+    * html body {
+      padding: 100px 0 0 230px;
+      /* Set the first value to the height of the header and last value to the width of the nav */
+    }
+
+    * html main {
+      height: 100%;
+      width: 100%;
+    }
+
     a.back-button {
       display: inline-block;
-      margin-left: 10px; /* add some left margin */
+      margin-left: 10px;
+      /* add some left margin */
       margin-top: 20px;
       background-color: #333;
       color: #fff;
       padding: 10px 20px;
       border-radius: 5px;
     }
+
     div.dropdown {
-      margin-left: 10px; /* add some left margin */
+      margin-left: 10px;
+      /* add some left margin */
     }
+
     div.dropdown label {
       display: inline-block;
-      margin-bottom: 5px; /* add some bottom margin to the label */
+      margin-bottom: 5px;
+      /* add some bottom margin to the label */
       margin-left: 4px;
     }
+
     div.dropdown select {
       display: block;
       width: 70%;
@@ -162,18 +174,24 @@
 <body>
   <header id="header">
     <div id="logo">
-        <h1>Spotify Song Streaming</h1>
+      <h1>Spotify Song Streaming</h1>
     </div>
   </header>
 
   <nav id="nav">
     <div class="innertube">
-        <h3>Top Songs & Lyrics</h3>
+      <h3>Top Songs & Lyrics</h3>
     </div>
 
     <div class="dropdown">
       <label for="region">Select to Change Region:</label>
       <select id="region" name="region">
+      </select>
+    </div>
+
+    <div class="dropdown">
+      <label for="date">Select Date:</label>
+      <select id="date" name="date">
       </select>
     </div>
 
@@ -203,17 +221,21 @@
           const urlParams = new URLSearchParams(window.location.search);
           return urlParams.get('region');
         }
+        function getDateKeyFromUrl() {
+          const urlParams = new URLSearchParams(window.location.search);
+          return urlParams.get('date');
+        }
 
         showLoader();
-        // Load unique regions from the server and populate the dropdown menu
-        fetch('http://localhost:5001/get-regions')
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .then(regions => {
+        // Load unique regions and dates from the server and populate the dropdown menus
+        Promise.all([
+          fetch('http://localhost:5001/get-regions'),
+          fetch('http://localhost:5001/get-dates')
+        ])
+          .then(responses => Promise.all(responses.map(response => response.json())))
+          .then(data => {
+            const [regions, dates] = data;
+
             const regionSelect = document.getElementById("region");
             regions.forEach(region => {
               const option = document.createElement("option");
@@ -221,24 +243,41 @@
               option.text = region;
               regionSelect.add(option);
             });
-            // // Fetch data and create the bar graph for the initially selected region
-            // fetchDataAndUpdateGraph(regionSelect.value);
-            // fetchLyricsData(regionSelect.value)
-            // Get the region key from the URL
+
+            const dateSelect = document.getElementById("date");
+            dates.forEach(date => {
+              const option = document.createElement("option");
+              option.value = date;
+              option.text = date;
+              dateSelect.add(option);
+            });
+
+            // Get the region and date keys from the URL
             const initialRegionKey = getRegionKeyFromUrl();
+            const initialDateKey = getDateKeyFromUrl() || dates[dates.length - 1];
 
-            if (initialRegionKey) {
-              // Set the selected option in the dropdown menu
-              regionSelect.value = initialRegionKey;
+            // Set the selected options in the dropdown menus
+            regionSelect.value = initialRegionKey;
+            dateSelect.value = initialDateKey;
 
-              // Fetch data and create the bar graph for the region from the URL
-              fetchDataAndUpdateGraph(initialRegionKey);
-              fetchLyricsData(initialRegionKey);
-            } else {
-              // Fetch data and create the bar graph for the initially selected region in the dropdown menu
-              fetchDataAndUpdateGraph(regionSelect.value);
-              fetchLyricsData(regionSelect.value);
-            }
+            // Fetch data and create the bar graph for the region and date from the URL
+            fetchDataAndUpdateGraph(initialRegionKey, initialDateKey);
+            fetchLyricsData(initialRegionKey, initialDateKey);
+
+            // Load data and update the bar graph and lyrics data when the region or date is changed
+            regionSelect.addEventListener("change", () => {
+              const selectedRegion = regionSelect.value;
+              const selectedDate = dateSelect.value;
+              fetchDataAndUpdateGraph(selectedRegion, selectedDate);
+              fetchLyricsData(selectedRegion, selectedDate);
+            });
+
+            dateSelect.addEventListener("change", () => {
+              const selectedRegion = regionSelect.value;
+              const selectedDate = dateSelect.value;
+              fetchDataAndUpdateGraph(selectedRegion, selectedDate);
+              fetchLyricsData(selectedRegion, selectedDate);
+            });
           })
           .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -251,13 +290,21 @@
         // Load large data set from server and update the bar graph when the region is changed
         document.getElementById("region").addEventListener("change", function () {
           const selectedRegion = this.value;
-          fetchDataAndUpdateGraph(selectedRegion);
-          fetchLyricsData(selectedRegion);
+          const date = document.getElementById("date").value;
+          fetchDataAndUpdateGraph(selectedRegion, date);
+          fetchLyricsData(selectedRegion, date);
         });
 
-        function fetchDataAndUpdateGraph(region) {
+        document.getElementById("date").addEventListener("change", function () {
+          const selectedRegion = document.getElementById("region").value;
+          const date = this.value;
+          fetchDataAndUpdateGraph(selectedRegion, date);
+          fetchLyricsData(selectedRegion, date);
+        });
+
+        function fetchDataAndUpdateGraph(region, date) {
           showLoader();
-          fetch(`http://localhost:5001/get-data?region=${region}`)
+          fetch(`http://localhost:5001/get-data?region=${region}&date=${date}`)
             .then(response => {
               if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -276,9 +323,9 @@
             });
         }
 
-        function fetchLyricsData(region) {
+        function fetchLyricsData(region, date) {
           showLoader();
-          fetch(`http://localhost:5001/get-lyrics?region=${region}`)
+          fetch(`http://localhost:5001/get-lyrics?region=${region}&date=${date}`)
             .then(response => {
               if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -295,7 +342,7 @@
             .finally(() => {
               hideLoader();
             });
-            svg2.selectAll("*").remove();
+          svg2.selectAll("*").remove();
         }
 
         // Set up margins
@@ -422,10 +469,8 @@
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         function createWordCloud(data) {
-          var appearanceScale = d3.scaleLog().range([13, 90]);
-          var words_data = data["words"]
-            .map(function (d) { return { text: d, size: data["word_count_obj"][d] }; })
-            .slice(0,200)
+          var appearanceScale = d3.scaleLinear().range([10, 70]);
+          var words_data = data["words"].map(function (d) { return { text: d, size: data["word_count_obj"][d] }; })
 
           appearanceScale.domain([
             d3.min(words_data, function (d) { return d.size; }),
@@ -435,26 +480,22 @@
           var layout = d3.layout.cloud()
             .size([width, height])
             .words(words_data)
-            .padding(2)
-            // .rotate(function () { return ~~(Math.random() * 2) * 90; })
+            .padding(5)
+            .rotate(function () { return ~~(Math.random() * 2) * 90; })
             .font("Impact")
             .fontSize(function (d) { return appearanceScale(d.size); }) // d.size
             .on("end", draw);
           layout.start();
 
           function draw(words) {
-            // svg2.selectAll("*").remove();
+            svg2.selectAll("*").remove();
             svg2.append("g")
               .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
               .selectAll("text")
               .data(words)
               .enter()
               .append("text")
-
-              .transition()
-              .duration(1000) 
               .style("font-size", function (d) { return d.size + "px"; })
-
               .attr("fill", (d, i) => color(i))
               .style("font-family", "Impact")
               .attr("text-anchor", "middle")
@@ -462,8 +503,8 @@
                 return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
               })
               .text(function (d) { return d.text; });
-            }
           }
+        }
       </script>
     </div>
   </main>

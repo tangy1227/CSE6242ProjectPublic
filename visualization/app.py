@@ -24,7 +24,7 @@ def index():
 @app.route('/get-data', methods=['GET'])
 def get_data():
     db_file = 'data.db' # Replace with the actual file path
-    date_filter = '2017-01-01'
+    date_filter = request.args.get('date', '2017-01-01')
     region_filter = request.args.get('region', 'ec')
     top_n = 10
 
@@ -67,10 +67,26 @@ def get_regions():
     response = make_response(jsonify(df['Region'].tolist()))
     return response
 
+@app.route('/get-dates', methods=['GET'])
+def get_dates():
+    db_file = 'data.db'
+
+    # Create a connection to the SQLite database
+    conn = sqlite3.connect(db_file)
+
+    # Read the data and find the unique dates
+    df = pd.read_sql_query('SELECT DISTINCT Date FROM data ORDER BY Date ASC', conn)
+
+    # Close the connection to the SQLite database
+    conn.close()
+
+    # Convert to JSON and return the result
+    response = make_response(jsonify(df['Date'].tolist()))
+    return response
 
 @app.route('/get-lyrics', methods=['GET'])
 def get_lyrics():
-    date_filter = '2017-01-01'
+    date_filter = request.args.get('date', '2017-01-01')
     region_filter = request.args.get('region', 'ec')
     top_n = 20
     db_file = 'data.db'
