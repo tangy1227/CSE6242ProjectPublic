@@ -6,7 +6,7 @@ class Musixmatch:
         self.url = "http://api.musixmatch.com/ws/1.1/"
         # only have access to 30% of the lyrics with this non-commercial api
         # allow only 2000 Api Calls per day and 500 Lyrics display per day
-        self.apikey = "59fb06124dfae411942f1a5d57a8ba0c"
+        self.apikey = "4de847499f2b28268a36d4b7a9023aa6"
         self.q_track_list = q_track_list
         self.q_artist_list = q_artist_list
         
