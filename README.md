@@ -20,6 +20,7 @@ python app.py
 * Open a second terminal window, navigate to the top-level project directory, and run
 ```bash
 cd CODE/visualization/
+conda activate 6242_env
 python -m http.server 8000
 ```
 * Finally, open a browser, and navigate to http://localhost:8000/chloropleth_map.html
