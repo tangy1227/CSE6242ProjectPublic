@@ -30,7 +30,7 @@ def get_data():
         region_filter = region
     else:
         region_filter = [k for k, v in region_map.items() if v == region][0]
-    top_n = 10
+    top_n = request.args.get('limit', 10)
 
     # Create a connection to the SQLite database
     conn = sqlite3.connect(db_file)

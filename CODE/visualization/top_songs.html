@@ -198,6 +198,22 @@
       </select>
     </div>
 
+    <div class="dropdown">
+      <label for="limit-select">Limit:</label>
+      <select id="limit-select">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+        <option value="30">30</option>
+        <option value="35">35</option>
+        <option value="40">40</option>
+        <option value="45">45</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
     <a href="#" onclick="history.back();" class="back-button">Back to Map</a>
 
   </nav>
@@ -246,6 +262,9 @@
         }
 
         showLoader();
+
+
+
         // Load unique regions and dates from the server and populate the dropdown menus
         Promise.all([
           fetch('http://localhost:5001/get-regions'),
@@ -271,18 +290,28 @@
               dateSelect.add(option);
             });
 
+            const limitSelect = document.getElementById("limit-select");
+            limitSelect.addEventListener("change", function () {
+              const selectedLimit = this.value;
+              const selectedRegion = regionSelect.value;
+              const selectedDate = dateSelect.value;
+              fetchDataAndUpdateGraph(selectedRegion, selectedDate, selectedLimit);
+            });
+
             // Get the region and date keys from the URL
             var region_map = { 'ar': 'Argentina', 'at': 'Austria', 'au': 'Australia', 'be': 'Belgium', 'bo': 'Bolivia', 'br': 'Brazil', 'ca': 'Canada', 'ch': 'Switzerland', 'cl': 'Chile', 'co': 'Colombia', 'cr': 'Costa Rica', 'cz': 'Czechia', 'de': 'Germany', 'dk': 'Denmark', 'do': 'Dominican Republic', 'ec': 'Ecuador', 'ee': 'Estonia', 'es': 'Spain', 'fi': 'Finland', 'fr': 'France', 'gb': 'UK', 'global': 'Global', 'gr': 'Greece', 'gt': 'Guatemala', 'hk': 'Hong Kong', 'hn': 'Honduras', 'hu': 'Hungary', 'id': 'Indonesia', 'ie': 'Ireland', 'is': 'Iceland', 'it': 'Italy', 'jp': 'Japan', 'lt': 'Lithuania', 'lu': 'Luxembourg', 'lv': 'Latvia', 'mx': 'Mexico', 'my': 'Malaysia', 'nl': 'Netherlands', 'no': 'Norway', 'nz': 'New Zealand', 'pa': 'Panama', 'pe': 'Peru', 'ph': 'Philippines', 'pl': 'Poland', 'pt': 'Portugal', 'py': 'Paraguay', 'se': 'Sweden', 'sg': 'Singapore', 'sk': 'Slovakia', 'sv': 'El Salvador', 'tr': 'Turkey', 'tw': 'Taiwan', 'us': 'US', 'uy': 'Uruguay' }
             const initialRegionKey = region_map[getRegionKeyFromUrl()];
             const initialDateKey = getDateKeyFromUrl() || dates[dates.length - 1];
+            const initialLimitKey = 10;
 
             // Set the selected options in the dropdown menus
             regionSelect.value = initialRegionKey;
             dateSelect.value = initialDateKey;
+            limitSelect.value = initialLimitKey;
 
             // Fetch data and create the bar graph for the region and date from the URL
-            fetchDataAndUpdateGraph(initialRegionKey, initialDateKey);
-            fetchLyricsData(initialRegionKey, initialDateKey);
+            fetchDataAndUpdateGraph(initialRegionKey, initialDateKey, initialLimitKey);
+            fetchLyricsData(initialRegionKey, initialDateKey, initialLimitKey);
 
           })
           .catch(error => {
@@ -297,20 +326,22 @@
         document.getElementById("region").addEventListener("change", function () {
           const selectedRegion = this.value;
           const date = document.getElementById("date").value;
-          fetchDataAndUpdateGraph(selectedRegion, date);
-          fetchLyricsData(selectedRegion, date);
+          const limit = document.getElementById("limit-select").value;
+          fetchDataAndUpdateGraph(selectedRegion, date, limit);
+          fetchLyricsData(selectedRegion, date, limit);
         });
 
         document.getElementById("date").addEventListener("change", function () {
           const selectedRegion = document.getElementById("region").value;
           const date = this.value;
-          fetchDataAndUpdateGraph(selectedRegion, date);
-          fetchLyricsData(selectedRegion, date);
+          const limit = document.getElementById("limit-select").value;
+          fetchDataAndUpdateGraph(selectedRegion, date, limit);
+          fetchLyricsData(selectedRegion, date, limit);
         });
 
-        function fetchDataAndUpdateGraph(region, date) {
+        function fetchDataAndUpdateGraph(region, date, limit = 10) {
           showLoader();
-          fetch(`http://localhost:5001/get-data?region=${region}&date=${date}`)
+          fetch(`http://localhost:5001/get-data?region=${region}&date=${date}&limit=${limit}`)
             .then(response => {
               if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -463,8 +494,8 @@
             .transition()
             .duration(1000)
             .attr("opacity", 1)
-            .attr("x", d => x(d.Streams) - Math.min(x(d.Streams), maxTextWidth) - 10)
-            .attr("width", d => Math.min(x(d.Streams), maxTextWidth))
+            .attr("x", d => x(d.Streams) - Math.min(x(d.Streams) - 25, maxTextWidth) - 10)
+            .attr("width", d => Math.min(x(d.Streams) - 25, maxTextWidth))
             .each(function (d) {
               d3.select(this)
                 .append("xhtml:div")
