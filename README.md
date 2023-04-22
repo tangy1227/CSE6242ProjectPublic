@@ -2,6 +2,13 @@
 
 #### Instructions to run the D3-based tool:
 
+Install environments:
+```bash
+conda create --name 6242_env python=3.8
+pip install -r requirements.txt
+conda activate 6252_env
+```
+
 From the command line:
 ```bash
 cd visualization/
