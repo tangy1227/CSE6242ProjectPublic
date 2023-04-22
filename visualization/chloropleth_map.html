@@ -471,9 +471,6 @@
                             for (var i = 0; i < streams.length; i++) {
                                 data.properties.streams[streams[i].Date] = streams[i].total_streams;
                             }
-                            //if no data for country, set flags
-                            //data.properties.num_users = (game_ratings.length == 0)? -99:game_ratings[0].num_users;
-                            //console.log(data);
                             return data;
                         })
                         .enter()
@@ -487,11 +484,7 @@
                         })
                         .attr("stroke", "black")
                         .attr("d", path)
-                        .on("click", function (d) {
-                            if (date_list[0] in d.properties.streams) {
-                                handleRegionClick(d);
-                            }
-                        })
+                        .on("click", handleRegionClick)
                         .on("mouseover", function (d) {
                             d3.select(this)
                                 .transition()
