@@ -284,20 +284,6 @@
             fetchDataAndUpdateGraph(initialRegionKey, initialDateKey);
             fetchLyricsData(initialRegionKey, initialDateKey);
 
-            // Load data and update the bar graph and lyrics data when the region or date is changed
-            // regionSelect.addEventListener("change", () => {
-            //   const selectedRegion = regionSelect.value;
-            //   const selectedDate = dateSelect.value;
-            //   fetchDataAndUpdateGraph(selectedRegion, selectedDate);
-            //   fetchLyricsData(selectedRegion, selectedDate);
-            // });
-
-            // dateSelect.addEventListener("change", () => {
-            //   const selectedRegion = regionSelect.value;
-            //   const selectedDate = dateSelect.value;
-            //   fetchDataAndUpdateGraph(selectedRegion, selectedDate);
-            //   fetchLyricsData(selectedRegion, selectedDate);
-            // });
           })
           .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
