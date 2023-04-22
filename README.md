@@ -14,7 +14,7 @@ pip install -r requirements.txt
 cd CODE/visualization/
 python create_database.py
 ```
-* Open two terminal windows. Execute `python app.py` in one window, and `python -m http.server 8000` the second window.
+* Open two terminal windows and navigate both to `CODE/visualization/`. Execute `python app.py` in one window, and `python -m http.server 8000` the second window.
 * Open a browser, and navigate to http://localhost:8000/chloropleth_map.html
 
 #### Instructions to run the Tableau-based tool:
