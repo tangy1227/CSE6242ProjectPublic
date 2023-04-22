@@ -1,14 +1,16 @@
 # CSE6242Project
 
 #### Instructions to run the D3-based tool:
-* Install environment and required packages (note that anaconda is a prerequisite):
+* Download `data.csv` from https://drive.google.com/file/d/15ThtXZSPA49Y-jtjRzYFawzeLRTBwvAs/view?usp=sharing
+* Place `data.csv` in the `CODE/visualization/` directory
+* Create a conda environment with the required packages listed in `requirements.txt`. Note that an anaconda installation is a prerequisite:
 ```bash
 conda create --name 6242_env python=3.8
+conda activate 6242_env
 pip install -r requirements.txt
 ```
-* Activate environment and run:
+* Run:
 ```bash
-conda activate 6242_env
 cd CODE/visualization/
 python create_database.py
 ```
@@ -17,6 +19,6 @@ python create_database.py
 
 #### Instructions to run the Tableau-based tool:
 * Visit the Dropbox link in `link-to-tableau.txt`
-* Download `CSE6242Project_Sastry.twbx`
+* Download the packaged workbook `CSE6242Project_Sastry.twbx` (which includes the datasets it relies on)
 * Open in Tableau Desktop Professional Edition (Tested on 2022.4.1)
 * Navigate to "Dashboard"
