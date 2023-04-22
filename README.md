@@ -11,11 +11,11 @@ conda activate 6252_env
 
 From the command line:
 ```bash
-cd visualization/
+cd CODE/visualization/
 python create_database.py
-python app.py
-python -m http.server 8000
 ```
+
+Open two terminals and execute `python app.py` and `python -m http.server 8000` in each terminal.
 
 #### Instructions to run the Tableau-based tool:
 * Visit the Dropbox link in link-to-tableau.txt
