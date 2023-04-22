@@ -17,6 +17,8 @@ python create_database.py
 
 Open two terminals and execute `python app.py` and `python -m http.server 8000` in each terminal.
 
+Open a browser, and navigate to http://localhost:8000/chloropleth_map.html
+
 #### Instructions to run the Tableau-based tool:
 * Visit the Dropbox link in link-to-tableau.txt
 * Download CSE6242Project_Sastry.twbx
