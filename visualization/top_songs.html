@@ -212,14 +212,16 @@
       </div>
 
       <div style="position: relative;">
-        <div style="background-color: #d9eed0; display: inline-block; padding: 5px 20px; border-radius: 5px; text-align: center;">
+        <div
+          style="background-color: #d9eed0; display: inline-block; padding: 5px 20px; border-radius: 5px; text-align: center;">
           <h2 style="margin: 0;">Bar Chart</h2>
         </div>
       </div>
       <div id="barchart"></div>
 
       <div style="position: relative;">
-        <div style="background-color: #d9eed0; display: inline-block; padding: 5px 20px; border-radius: 5px; text-align: center;">
+        <div
+          style="background-color: #d9eed0; display: inline-block; padding: 5px 20px; border-radius: 5px; text-align: center;">
           <h2 style="margin: 0;">Word Cloud</h2>
         </div>
       </div>
@@ -270,7 +272,7 @@
             });
 
             // Get the region and date keys from the URL
-			var region_map = {'ar': 'Argentina', 'at':'Austria', 'au':'Australia', 'be':'Belgium', 'bo':'Bolivia', 'br':'Brazil', 'ca':'Canada', 'ch':'Switzerland', 'cl':'Chile', 'co':'Colombia', 'cr':'Costa Rica', 'cz':'Czechia', 'de':'Germany', 'dk':'Denmark', 'do':'Dominican Republic', 'ec':'Ecuador', 'ee':'Estonia', 'es':'Spain', 'fi':'Finland', 'fr':'France', 'gb':'UK', 'global':'Global', 'gr':'Greece', 'gt':'Guatemala', 'hk':'Hong Kong', 'hn':'Honduras', 'hu':'Hungary', 'id':'Indonesia', 'ie':'Ireland', 'is':'Iceland', 'it':'Italy', 'jp':'Japan', 'lt':'Lithuania', 'lu':'Luxembourg', 'lv':'Latvia', 'mx':'Mexico', 'my':'Malaysia', 'nl':'Netherlands', 'no':'Norway', 'nz':'New Zealand', 'pa':'Panama', 'pe':'Peru', 'ph':'Philippines', 'pl':'Poland', 'pt':'Portugal', 'py':'Paraguay', 'se':'Sweden', 'sg':'Singapore', 'sk':'Slovakia', 'sv':'El Salvador', 'tr':'Turkey', 'tw':'Taiwan', 'us':'US', 'uy':'Uruguay'}
+            var region_map = { 'ar': 'Argentina', 'at': 'Austria', 'au': 'Australia', 'be': 'Belgium', 'bo': 'Bolivia', 'br': 'Brazil', 'ca': 'Canada', 'ch': 'Switzerland', 'cl': 'Chile', 'co': 'Colombia', 'cr': 'Costa Rica', 'cz': 'Czechia', 'de': 'Germany', 'dk': 'Denmark', 'do': 'Dominican Republic', 'ec': 'Ecuador', 'ee': 'Estonia', 'es': 'Spain', 'fi': 'Finland', 'fr': 'France', 'gb': 'UK', 'global': 'Global', 'gr': 'Greece', 'gt': 'Guatemala', 'hk': 'Hong Kong', 'hn': 'Honduras', 'hu': 'Hungary', 'id': 'Indonesia', 'ie': 'Ireland', 'is': 'Iceland', 'it': 'Italy', 'jp': 'Japan', 'lt': 'Lithuania', 'lu': 'Luxembourg', 'lv': 'Latvia', 'mx': 'Mexico', 'my': 'Malaysia', 'nl': 'Netherlands', 'no': 'Norway', 'nz': 'New Zealand', 'pa': 'Panama', 'pe': 'Peru', 'ph': 'Philippines', 'pl': 'Poland', 'pt': 'Portugal', 'py': 'Paraguay', 'se': 'Sweden', 'sg': 'Singapore', 'sk': 'Slovakia', 'sv': 'El Salvador', 'tr': 'Turkey', 'tw': 'Taiwan', 'us': 'US', 'uy': 'Uruguay' }
             const initialRegionKey = region_map[getRegionKeyFromUrl()];
             const initialDateKey = getDateKeyFromUrl() || dates[dates.length - 1];
 
@@ -380,7 +382,7 @@
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         function createBarGraph(data) {
-          svg.selectAll(".bar, .trackName, .streamCount, .axis, .axis-label").remove();
+          svg.selectAll(".bar, .trackName, .streamCount, .axis, .axis-label, .barGroup").remove();
           // Set up the x and y scales
           const x = d3.scaleLinear()
             .domain([0, d3.max(data, d => d.Streams)])
@@ -425,11 +427,19 @@
             .style("text-anchor", "middle")
             .text("Rank");
 
-          // Create the bars
-          svg.selectAll(".bar")
+
+          // Create a clipPath to limit the text width
+          const maxTextWidth = 500;
+
+          // Create bars and texts container
+          const barGroups = svg.selectAll(".barGroup")
             .data(data)
             .enter()
-            .append("rect")
+            .append("g")
+            .attr("class", "barGroup");
+
+          // Create the bars
+          barGroups.append("rect")
             .attr("class", "bar")
             .attr("x", 0)
             .attr("y", (d, i) => yRanking(i + 1))
@@ -439,14 +449,27 @@
             .transition()
             .duration(1000)
             .attr("width", d => x(d.Streams));
-          // Create a clipPath to limit the text width
-          const maxTextWidth = 500;
+
+          // Add mouseover and mouseout event listeners to the barGroups
+          barGroups.on("mouseover", function (d, i) {
+            d3.select(this).select(".bar")
+              .transition()
+              .duration(200)
+              .attr("height", yRanking.bandwidth() + 4)
+              .attr("y", yRanking(i + 1) - 2)
+              .attr("width", d => x(d.Streams));
+          })
+            .on("mouseout", function (d, i) {
+              d3.select(this).select(".bar")
+                .transition()
+                .duration(200)
+                .attr("height", yRanking.bandwidth())
+                .attr("y", yRanking(i + 1))
+                .attr("width", d => x(d.Streams));
+            });
 
           // Add track names
-          svg.selectAll(".trackName")
-            .data(data)
-            .enter()
-            .append("foreignObject")
+          barGroups.append("foreignObject")
             .attr("class", "trackName")
             .attr("y", (d, i) => yRanking(i + 1))
             .attr("height", yRanking.bandwidth())
@@ -463,13 +486,17 @@
                 .style("text-overflow", "ellipsis")
                 .style("white-space", "nowrap")
                 .style("line-height", yRanking.bandwidth() + "px")
-                .style("text-align", "right") // Right-align the text
+                .style("text-align", "right")
+                .style("cursor", "pointer")
                 .text(d["Track Name"])
+                .on("click", function () {
+                  window.open(d.URL, '_blank');
+                })
                 .append("title")
                 .text(d["Track Name"]);
             });
 
-            
+
           // Add stream counts
           svg.selectAll(".streamCount")
             .data(data)
@@ -502,7 +529,7 @@
           var appearanceScale = d3.scaleLog().range([13, 90]);
           var words_data = data["words"]
             .map(function (d) { return { text: d, size: data["word_count_obj"][d] }; })
-            .slice(0,200)
+            .slice(0, 200)
 
           appearanceScale.domain([
             d3.min(words_data, function (d) { return d.size; }),
@@ -529,7 +556,7 @@
               .append("text")
 
               .transition()
-              .duration(1000) 
+              .duration(1000)
               .style("font-size", function (d) { return d.size + "px"; })
 
               .attr("fill", (d, i) => color(i))
