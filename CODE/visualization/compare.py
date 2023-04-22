@@ -45,3 +45,10 @@ for (region1, region2), similarity in most_similar.items():
 print("\nBottom 10 least similar regions:")
 for (region1, region2), similarity in least_similar.items():
     print(f"{region1}, {region2}, {similarity:.2f}")
+
+# Save the results to CSV files
+most_similar.to_csv('most_similar.csv', header=['Similarity'])
+least_similar.to_csv('least_similar.csv', header=['Similarity'])
+
+# Print a message indicating that the CSV files have been saved
+print("CSV files saved: most_similar.csv, least_similar.csv")
