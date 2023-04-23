@@ -4,7 +4,7 @@
 
 ### Download Spotify Dataset
 * Visit https://drive.google.com/file/d/15ThtXZSPA49Y-jtjRzYFawzeLRTBwvAs/view?usp=sharing
-* Download `data.csv` and place it in the `CODE/visualization/` directory
+* Download `data.csv` and place it in the `CODE/visualization/` directory. Please ensure that it keeps the correct name (data.csv), or change it after moving it into the 'CODE/visualiztion/' directory.
 
 ### Obtain API Access to Musixmatch Lyrical Database
 This is not entirely required, as we have included our API key in this code release. However, each API key has an associated daily maximum limit on API calls, so it is possible that the tool will fail after some use, if using our API key. To obtain an API key:
@@ -21,6 +21,8 @@ pip install -r requirements.txt
 ```
 (note that an anaconda installation is a prerequisite here)
 
+For Windows users, download anaconda from https://www.anaconda.com/download/ and click thee Download with the Windows icon. Run the commands below in an Anaconda Prompt instead of the Windows Terminal Prompt.
+
 ### Run the tool!
 In the same terminal window, run:
 ```bash
@@ -34,6 +36,9 @@ cd CODE/visualization/
 conda activate 6242_env
 python -m http.server 8000
 ```
+
+For Windows users, you must specify the full path of the requirements.txt and CODE/visualization/ for the above to run as expected. You can get the full path by right-clicking on that file or directory and selecting 'Properties.' Copy the entire path in 'Location' to the very end and paste it into the anaconda window, then add the remainder ('\requirements.txt' and '\visualization\', respectively) to that string to get the complete path. When using the second terminal to execute the commands, please also use Anaconda Terminal.
+
 * Finally, open a browser, and navigate to http://localhost:8000/chloropleth_map.html
 
 ## Instructions to run the Tableau-based tool:
