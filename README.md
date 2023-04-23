@@ -12,16 +12,14 @@ This is not entirely required, as we have included our API key in this code rele
 * Update the `self.apikey` variable in `Musixmatch.__init__()` in `CODE/visualization/load_lyrics.py`
 
 ### Install required packages
-* Open a terminal window, and navigate to the top-level project directory.
+* Mac/Linux users: Open a terminal window, and navigate to the top-level project directory. Windows users: Run commands in in Anaconda Prompt instead.
 * Create a conda environment with all required packages by running: 
 ```bash
 conda create --name 6242_env python=3.8
 conda activate 6242_env
 pip install -r requirements.txt
 ```
-(note that an anaconda installation is a prerequisite here)
-
-For Windows users, download anaconda from https://www.anaconda.com/download/ and click the Download button with the Windows icon. Run the commands below in an Anaconda Prompt instead of a Windows Terminal Prompt.
+Note that an anaconda installation is a prerequisite here. If required, Anaconda can be obtained from https://www.anaconda.com/download/. Click the Download button corresponding to your operating system.
 
 ### Run the tool!
 In the same terminal window, run:
