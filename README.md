@@ -21,7 +21,7 @@ pip install -r requirements.txt
 ```
 (note that an anaconda installation is a prerequisite here)
 
-For Windows users, download anaconda from https://www.anaconda.com/download/ and click thee Download with the Windows icon. Run the commands below in an Anaconda Prompt instead of the Windows Terminal Prompt.
+For Windows users, download anaconda from https://www.anaconda.com/download/ and click the Download button with the Windows icon. Run the commands below in an Anaconda Prompt instead of a Windows Terminal Prompt.
 
 ### Run the tool!
 In the same terminal window, run:
@@ -37,7 +37,7 @@ conda activate 6242_env
 python -m http.server 8000
 ```
 
-For Windows users, you must specify the full path of the requirements.txt and CODE/visualization/ for the above to run as expected. You can get the full path by right-clicking on that file or directory and selecting 'Properties.' Copy the entire path in 'Location' to the very end and paste it into the anaconda window, then add the remainder ('\requirements.txt' and '\visualization\', respectively) to that string to get the complete path. When using the second terminal to execute the commands, please also use Anaconda Terminal.
+For Windows users, you must specify the full path of the requirements.txt and CODE/visualization/ for the above to run as expected. You can get the full path by right-clicking on that file or directory and selecting 'Properties.' Copy the entire path in 'Location' to the very end and paste it into the anaconda window, then add the remainder ('\requirements.txt' and '\visualization\', respectively) to that string to get the complete path. When using the second terminal to execute the latter half of the above commands, please use Anaconda Terminal there as well.
 
 * Finally, open a browser, and navigate to http://localhost:8000/chloropleth_map.html
 
