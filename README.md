@@ -1,4 +1,5 @@
-# CSE6242Project
+# Interactive, Spatiotemporal Visualization of Spotify Music Popularity
+note: This project originated from the private repository hosted at [original private repository URL](https://github.com/jerryuhoo/CSE6242Project).
 
 ## Instructions to run the D3-based tool:
 
